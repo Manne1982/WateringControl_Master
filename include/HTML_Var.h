@@ -88,7 +88,7 @@ Uhrzeit: %s | Datum: %s, %02d.%02d.%d | Status: %s %s | Letzter Reconnect: %s | 
 const char html_NWconfig[] PROGMEM = R"rawliteral(
 <h1>Beregnung NW-Einstellungen</h1><hr>
 <h2>WLAN Einstellungen</h2>
-<form action="/get">
+<form action="/POST">
 <TABLE>
   <TR>
     <TD WIDTH="120" VALIGN="TOP">
@@ -116,7 +116,7 @@ const char html_NWconfig[] PROGMEM = R"rawliteral(
 </form>
 <hr>
 <h2>Netzwerk</h2><br />
-<form action="/get">
+<form action="/POST">
 <TABLE>
   <TR>
     <TD WIDTH="200" VALIGN="TOP">
@@ -196,7 +196,7 @@ const char html_NWconfig[] PROGMEM = R"rawliteral(
   </form>
 <hr>
 <h2>MQTT</h2><br>
-<form action="/get">
+<form action="/POST">
 <table>
   <tbody><tr>
     <td valign="TOP">
@@ -341,7 +341,7 @@ const char html_Start_5[] PROGMEM = R"rawliteral(
 const char html_LED_Config[] PROGMEM = R"rawliteral(
 <h1>Beregnung LED-Konfiguration</h1><hr>
 <h2>Farbauswahl</h2><br />
-<form action="/get">
+<form action="/POST">
 Rot: <input name="LF_Rot" type="number" min="0" max="255" step="1" size="8" required="1" value="%u">
 Gruen: <input name="LF_Gruen" type="number" min="0" max="255" step="1" size="8" required="1" value="%u">
 Blau: <input name="LF_Blau" type="number" min="0" max="255" step="1" size="8" required="1" value="%u">
@@ -349,7 +349,7 @@ Blau: <input name="LF_Blau" type="number" min="0" max="255" step="1" size="8" re
 </form>
 <br />
 <br />
-<form action="/get">
+<form action="/POST">
 <TABLE border="1">
   <TR>
     <TD WIDTH="150" VALIGN="TOP">
@@ -388,7 +388,7 @@ Blau: <input name="LF_Blau" type="number" min="0" max="255" step="1" size="8" re
 )rawliteral";
 const char html_Prog1[] PROGMEM = R"rawliteral(
 <h1>Beregnung Kanalbenennung</h1><hr>
-<form action="/get">
+<form action="/POST">
 <TABLE> <!-- 'border="1"-->
   <TR>
     <TD WIDTH="100" VALIGN="TOP">
@@ -432,12 +432,12 @@ Wenn das Programm 50 Minuten laeuft,<br> schaltet Kanal ein ab Minute 5 ein fuer
 const char html_Prog4[] PROGMEM = R"rawliteral(
 %s
 <h2>Programm %u</h2><br />
-<form action="/get">
+<form action="/POST">
 Programmname: <input name="PD_Prog_Name_%u" type="text" minlength="2" maxlength="6" size="15" value="%s" required="1"><br />
 Standarddauer in Minuten: <input name="PD_Prog_Dauer_%u" type="number" min="10" max="300" step="1" size="8" required="1" value="%u">
 <input value="Submit" type="submit"><br /><br />
 </form>
-<form action="/get">
+<form action="/POST">
 <TABLE> <!-- 'border="1"-->
   <TR>
     <TD WIDTH="100" VALIGN="TOP">
