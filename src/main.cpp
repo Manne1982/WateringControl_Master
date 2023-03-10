@@ -154,8 +154,8 @@ void TouchInit(); //Initialisierung der Touchtasten
 AsyncWebServer server(80);
 
 // WiFi Variablen
-char ssid_sta[] = "WN10";                                                             //"<your SSID>";
-char password_sta[] = "TYNtazHgxPudD164v3uqFdiG5SzXrI1uxhP84WbJpYQc5092tzZJodOMnWWS"; //"<Your Password";
+char ssid_sta[] = "WN";                                                             //"<your SSID>";
+char password_sta[] = ""; //"<Your Password";
 
 const char *ssid_AP = "ESP_Beregnung_01";
 const char *password_AP = ""; //Wenn Passwort, dann muss es eine Laenge von 8 - 32 Zeichen haben
