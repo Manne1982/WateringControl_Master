@@ -24,6 +24,8 @@ uint8_t touchPorts[8] = {touchUp_wsgn, touchDown_gn, touchLeft_br, touchRight_ws
 //Touch-Variablen neu
 float arrTouchAVG[8] = {0, 0, 0, 0, 0, 0, 0, 0};           //Array für die Durchschnitswerte pro Touch-Sensor
 uint8_t TouchSensitivity = 2;                              //Empfindlichkeit der Touchtasten unter Glas = 1
+uint8_t TouchFailureCount = 0;                            //Fehler der Touchtasten aufsummieren (Aktueller Wert > Initialwert)
+const uint8_t TouchFailureCountMax = 100;                  //Maximale Fehleranzahl der Tochtasten
 uint8_t SoftPWM_Counter = 0;                               //Zaehler der immer um 1 hochgezaehlt wird
 uint8_t SoftPWM_RGB[3] = {0, 0, 0};                        //3 Variablem mit dem Ausschaltwert (0 = immer aus, 255 = immer ein) 0 = Rot, 1 = Gruen, 2 = Blau
 uint8_t SoftPWM_Ports[3] = {RGB_Red, RGB_Green, RGB_Blue}; //Die 3 Ports in ein Array geschriben um sie einfacher zu bearbeiten
@@ -35,6 +37,7 @@ unsigned long Break_1s = 0;                                //Variable fuer Dinge
 unsigned long Break_60s = 0;                               //Variable fuer Dinge die alle 60s ausgefuehrt werden
 unsigned long Break_10m = 0;                               //Variable fuer Dinge die alle 10m ausgefuehrt werden
 unsigned long Break_h = 0;                                 //Variable fuer Dinge die alle 1h ausgefuehrt werden
+unsigned long Break_Touchtest = 0;                         //Pause bei überprüfung der Touchvariablen
 int monthDay = 0;                                          //Variablen für die aktuelle Zeit
 int currentMonth = 0;
 int currentYear = 0;
@@ -120,7 +123,7 @@ char * GetLastMessagesHTML()
 
 //Funktionsdefinitionen
 void WiFi_Start_STA(char *ssid_sta, char *password_sta);
-void WiFi_Start_AP();
+void WiFi_Start_AP(const char * ssid_AP);
 bool WIFIConnectionCheck(bool with_reconnect);
 void notFound(AsyncWebServerRequest *request);
 void EinstSpeichern();
@@ -166,14 +169,14 @@ void WebserverTouchInit(AsyncWebServerRequest *request);
 void WebserverPOST(AsyncWebServerRequest *request);
 
 //Erstellen Serverelement
-AsyncWebServer server(80);
+AsyncWebServer server(8080);
 
 // WiFi Variablen
-char ssid_sta[] = "WN";                                                             //"<your SSID>";
-char password_sta[] = ""; //"<Your Password";
+//char ssid_sta[] = "SSID_WN";                                                             //"<your SSID>";
+//char password_sta[] = ""; //"<Your Password";
 
-const char *ssid_AP = "ESP_Beregnung_01";
-const char *password_AP = ""; //Wenn Passwort, dann muss es eine Laenge von 8 - 32 Zeichen haben
+//const char *ssid_AP = "ESP_Beregnung_01";
+//const char *password_AP = ""; //Wenn Passwort, dann muss es eine Laenge von 8 - 32 Zeichen haben
 
 //Uhrzeit Variablen
 WiFiUDP ntpUDP;
@@ -229,11 +232,11 @@ void setup(void)
   ResetVarSpeichern(0);
   DebugFenster->printnl("WLAN-Einstellungen vornehmen und verbinden");
   //WLAN starten
-  /*  if (varConfig.WLAN_AP_Aktiv == 1)
-    WiFi_Start_AP();
+  if (varConfig.WLAN_AP_Aktiv == 1)
+    WiFi_Start_AP(varConfig.WLAN_SSID);
   else
-    WiFi_Start_STA(varConfig.WLAN_SSID, varConfig.WLAN_Password);*/
-  WiFi_Start_STA(ssid_sta, password_sta);
+    WiFi_Start_STA(varConfig.WLAN_SSID, varConfig.WLAN_Password);
+  //WiFi_Start_STA(ssid_sta, password_sta);
 
   //Zeitserver Einstellungen
   DebugFenster->printnl("Zeitserver einstellen und verbinden");
@@ -348,9 +351,8 @@ void loop()
   if (Break_200ms < millis())
   {
     Break_200ms = millis() + 200;
-    
-
     if (TouchSperre < millis())
+    {
       for (int i = 0; i < 8; i++)
       {
         if((arrTouchAVG[i] - touchRead(touchPorts[i])) > TouchSensitivity)
@@ -450,8 +452,38 @@ void loop()
               }
             }
           }
+          else
+          {
+            if(Break_Touchtest < millis())
+            {
+              float ReadVar = AVGTouchPort(touchPorts[i], 1);
+              if(((ReadVar - arrTouchAVG[i]) > 0.3))
+              {
+                if(TouchFailureCount >= TouchFailureCountMax)
+                {
+                  TouchFailureCount = 0;
+                  TouchInit();
+                }
+                else
+                  TouchFailureCount++;
+                if(DebugMode)
+                {
+                  DebugFenster->print("Touchport_Fehler ");
+                  DebugFenster->print(i);
+                  DebugFenster->print(" Fehleranzahl ");
+                  DebugFenster->print(TouchFailureCount);
+                  DebugFenster->print(" Initialwert ");
+                  DebugFenster->print(arrTouchAVG[i]);
+                  DebugFenster->print(" aktueller Wert ");
+                  DebugFenster->println(ReadVar);
+                }
+              }
+            }
+          }
         }
       }
+      Break_Touchtest = (Break_Touchtest > millis())?Break_Touchtest:(millis() + 1000);
+    }
   }
   //Anweisungen werden alle 1 Sekunden ausgefuehrt
   if (Break_1s < millis())
@@ -1176,8 +1208,11 @@ void WiFi_Start_STA(char *ssid_sta, char *password_sta)
 #endif
   }
 }
-void WiFi_Start_AP()
+void WiFi_Start_AP(const char * ssid_AP)
 {
+//  char *ssid_AP = "ESP_Beregnung_01";
+  const char *password_AP = ""; //Wenn Passwort, dann muss es eine Laenge von 8 - 32 Zeichen haben
+
   WiFi.mode(WIFI_AP); // Accesspoint
                       //  WiFi.hostname(varConfig.NW_NetzName);
 
@@ -1762,10 +1797,8 @@ void notFound(AsyncWebServerRequest *request)
 void WebserverRoot(AsyncWebServerRequest *request)
 {
   char *Header_neu = new char[(strlen(html_header) + 50 + 50)];
-  char *HTMLTemp = new char[(strlen(html_Start_1) + 100)];
-  char *HTMLTemp1 = new char[((strlen(html_Start_2_Prog) + 50)*ProgItems)];
-  char *HTMLTemp2 = new char[((strlen(html_Start_4_Manu) + 50)*8)];
-  char *HTMLString = new char[(strlen(html_header) + 50)+(strlen(html_Start_1) + 100)+((strlen(html_Start_2_Prog) + 50)*ProgItems)+((strlen(html_Start_4_Manu) + 50)*8)];
+  char *HTMLTemp = new char[(strlen(html_Start) + 100)];
+  char *HTMLString = new char[(strlen(html_header) + 50)+(strlen(html_Start) + 100)];
   //Vorbereitung Datum
   unsigned long epochTime = timeClient->getEpochTime();
   struct tm *ptm = gmtime((time_t *)&epochTime);
@@ -1773,27 +1806,13 @@ void WebserverRoot(AsyncWebServerRequest *request)
   int currentMonth = ptm->tm_mon + 1;
   int currentYear = ptm->tm_year + 1900;
   HTMLTemp[0] = 0;
-  HTMLTemp1[0] = 0;
-  HTMLTemp2[0] = 0;
   sprintf(Header_neu, html_header, timeClient->getFormattedTime().c_str(), WeekDays[timeClient->getDay()].c_str(), monthDay, currentMonth, currentYear, WifiState, MQTTState, WifiLastChange, NanoRequests_afterLastAnsw, countMessages);
   //1. Fuellstand in L; 2. Fuellstand in Prozent; Wasserstand in mm; Fuellstand aenderung
-  sprintf(HTMLTemp, html_Start_1, (pGeneralVar[WaterLevLiter]), (100.0/maxWaterLevelLiter*pGeneralVar[WaterLevLiter]), (pGeneralVar[WaterLev]), pGeneralVar[WaterVolTotal]);
-  for (int i = 0; i < ProgItems; i++)
-  {
-    //1. Vorheriger String; 2. & 4. ProgNr; 3. ProgName
-    sprintf(HTMLTemp1, html_Start_2_Prog, HTMLTemp1, i + 1, varConfig.Programm[i].ProgName, i + 1);
-  }
-  for (int i = 0; i < 8; i++)
-  {
-    //1. Vprheriger String; 3. & 6. Kanal-Name; 2. & 4. & 5. & 7. Kanal-Nummer
-    sprintf(HTMLTemp2, html_Start_4_Manu, HTMLTemp2, i + 1, &varConfig.ChannelName[i][0], i + 1, i + 1, &varConfig.ChannelName[i][0], i + 1);
-  }
+  sprintf(HTMLTemp, html_Start, (pGeneralVar[WaterLevLiter]), (100.0/maxWaterLevelLiter*pGeneralVar[WaterLevLiter]), (pGeneralVar[WaterLev]), pGeneralVar[WaterVolTotal]);
   //Zusammenfassen der Einzelstrings
-  sprintf(HTMLString, "%s%s%s%s%s%s", Header_neu, HTMLTemp, HTMLTemp1, html_Start_3, HTMLTemp2, html_Start_5);
+  sprintf(HTMLString, "%s%s", Header_neu, HTMLTemp);
   request->send_P(200, "text/html", HTMLString);
   delete[] HTMLTemp;
-  delete[] HTMLTemp1;
-  delete[] HTMLTemp2;
   delete[] HTMLString;
   delete[] Header_neu;
 }

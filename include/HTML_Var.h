@@ -84,11 +84,82 @@ Uhrzeit: %s | Datum: %s, %02d.%02d.%d | Status: %s %s | Letzter Reconnect: %s | 
 
 </h3><hr>
 )rawliteral";
+const char html_Start[] PROGMEM = R"rawliteral(
+<h1>Beregnung Startseite</h1><hr>
+<h2>Informationen</h2><br />
+<TABLE border="1">
+  <TR>
+    <TD WIDTH="250" VALIGN="TOP">
+      Fuellstand in Liter<br /></TD>
+    <TD WIDTH="100" VALIGN="TOP">
+	  &nbsp %u l</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">
+      Fuellstand in Prozent<br /></TD>
+    <TD VALIGN="TOP">
+	  &nbsp %.1f %%</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">
+      Wasserstand in cm<br /></TD>
+    <TD VALIGN="TOP">
+	  &nbsp %u mm</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">
+      Gesamtverbrauch in l<br /></TD>
+    <TD VALIGN="TOP">
+	  &nbsp %d l</TD>
+  </TR>
+</TABLE>
+<br />
+
+
+<h2>Zusatzfunktionen</h2><br />
+<TABLE> <!-- 'border="1"-->
+  <TR>
+    <TD WIDTH="220" VALIGN="TOP">
+      <a href=/DisplayOn>Display einschalten</a><br /></TD>
+  <TR>
+    <TD VALIGN="TOP">
+      <a href=/DisplayOff>Display ausschalten</a><br /></TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">
+      <a href=/LastMessages>Kommunikation Nano</a><br /></TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">
+      <a href=/TouchInit>Touch-Tasten neu initialisieren</a><br /></TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">
+      <a href=/DebugStart>Debug-Modus starten</a><br /></TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">
+      <a href=/DebugEnd>Debug-Modus beenden</a><br /></TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">
+      <a href=/DebugText>Debug-Text anzeigen</a><br /></TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">
+      <a href=/DebugToggleWindow>Deburg-Text auf Display</a><br /></TD>
+  </TR>
+</TABLE>
+<br />
+</body>
+</html>
+)rawliteral";
+
 
 const char html_NWconfig[] PROGMEM = R"rawliteral(
 <h1>Beregnung NW-Einstellungen</h1><hr>
 <h2>WLAN Einstellungen</h2>
-<form action="/POST">
+<form method="post" action="/POST">
 <TABLE>
   <TR>
     <TD WIDTH="120" VALIGN="TOP">
@@ -116,7 +187,7 @@ const char html_NWconfig[] PROGMEM = R"rawliteral(
 </form>
 <hr>
 <h2>Netzwerk</h2><br />
-<form action="/POST">
+<form method="post" action="/POST">
 <TABLE>
   <TR>
     <TD WIDTH="200" VALIGN="TOP">
@@ -196,7 +267,7 @@ const char html_NWconfig[] PROGMEM = R"rawliteral(
   </form>
 <hr>
 <h2>MQTT</h2><br>
-<form action="/POST">
+<form method="post" action="/POST">
 <table>
   <tbody><tr>
     <td valign="TOP">
@@ -252,96 +323,11 @@ const char html_NWconfig[] PROGMEM = R"rawliteral(
 </body>
 </html>
 )rawliteral";
-const char html_Start_1[] PROGMEM = R"rawliteral(
-<h1>Beregnung Startseite</h1><hr>
-<h2>Informationen</h2><br />
-<TABLE border="1">
-  <TR>
-    <TD WIDTH="250" VALIGN="TOP">
-      Fuellstand in Liter<br /></TD>
-    <TD WIDTH="100" VALIGN="TOP">
-	  &nbsp %u l</TD>
-  </TR>
-  <TR>
-    <TD VALIGN="TOP">
-      Fuellstand in Prozent<br /></TD>
-    <TD VALIGN="TOP">
-	  &nbsp %.1f %%</TD>
-  </TR>
-  <TR>
-    <TD VALIGN="TOP">
-      Wasserstand in cm<br /></TD>
-    <TD VALIGN="TOP">
-	  &nbsp %u mm</TD>
-  </TR>
-  <TR>
-    <TD VALIGN="TOP">
-      Gesamtverbrauch in l<br /></TD>
-    <TD VALIGN="TOP">
-	  &nbsp %d l</TD>
-  </TR>
-</TABLE>
-<br />
-
-
-<h2>Grundfunktionen</h2><br />
-<TABLE> <!-- 'border="1"-->
-)rawliteral";
-const char html_Start_2_Prog[] PROGMEM = R"rawliteral(
-%s  
-  <TR>
-    <TD WIDTH="220" VALIGN="TOP">
-      <a href=\prog%u\>%s</a><br /></TD>
-    <TD WIDTH="300" VALIGN="TOP">
-	  Beispiel: "192.168.178.10/prog%u"</TD>
-  </TR>
-)rawliteral";
-const char html_Start_3[] PROGMEM = R"rawliteral(
-  <TR>
-    <TD VALIGN="TOP">
-      <a href=\LED\>LED</a><br /></TD>
-    <TD VALIGN="TOP">
-	  Beispiel: "192.168.178.10/LED"</TD>
-  </TR>
-  <TR>
-    <TD VALIGN="TOP">
-      <br /></TD>
-    <TD VALIGN="TOP">
-	  <br /></TD>
-  </TR>
-  <TR>
-    <TD VALIGN="TOP">
-	  <a href=\off_all>Alle Kanaele ausschalten</a><br /></TD>
-    <TD VALIGN="TOP">
-	  Beispiel: "192.168.178.10/off_all"</TD>
-  </TR>
-)rawliteral";
-const char html_Start_4_Manu[] PROGMEM = R"rawliteral(
-%s
-  <TR>
-    <TD VALIGN="TOP">
-	  <a href=\on\%u>Einschalten %s</a><br /></TD>
-    <TD VALIGN="TOP">
-	  Beispiel: "192.168.178.10/on/%u"</TD>
-  </TR>
-  <TR>
-    <TD VALIGN="TOP">
-	  <a href=\off\%u>Ausschalten %s</a><br /></TD>
-    <TD VALIGN="TOP">
-	  Beispiel: "192.168.178.10/off/%u"</TD>
-  </TR>
-)rawliteral";
-const char html_Start_5[] PROGMEM = R"rawliteral(
-</TABLE>
-<br />
-</body>
-</html>
-)rawliteral";
 
 const char html_LED_Config[] PROGMEM = R"rawliteral(
 <h1>Beregnung LED-Konfiguration</h1><hr>
 <h2>Farbauswahl</h2><br />
-<form action="/POST">
+<form method="post" action="/POST">
 Rot: <input name="LF_Rot" type="number" min="0" max="255" step="1" size="8" required="1" value="%u">
 Gruen: <input name="LF_Gruen" type="number" min="0" max="255" step="1" size="8" required="1" value="%u">
 Blau: <input name="LF_Blau" type="number" min="0" max="255" step="1" size="8" required="1" value="%u">
@@ -349,7 +335,7 @@ Blau: <input name="LF_Blau" type="number" min="0" max="255" step="1" size="8" re
 </form>
 <br />
 <br />
-<form action="/POST">
+<form method="post" action="/POST">
 <TABLE border="1">
   <TR>
     <TD WIDTH="150" VALIGN="TOP">
@@ -388,7 +374,7 @@ Blau: <input name="LF_Blau" type="number" min="0" max="255" step="1" size="8" re
 )rawliteral";
 const char html_Prog1[] PROGMEM = R"rawliteral(
 <h1>Beregnung Kanalbenennung</h1><hr>
-<form action="/POST">
+<form method="post" action="/POST">
 <TABLE> <!-- 'border="1"-->
   <TR>
     <TD WIDTH="100" VALIGN="TOP">
@@ -432,7 +418,7 @@ Wenn das Programm 50 Minuten laeuft,<br> schaltet Kanal ein ab Minute 5 ein fuer
 const char html_Prog4[] PROGMEM = R"rawliteral(
 %s
 <h2>Programm %u</h2><br />
-<form action="/POST">
+<form method="post" action="/POST">
 Programmname: <input name="PD_Prog_Name_%u" type="text" minlength="2" maxlength="6" size="15" value="%s" required="1"><br />
 Standarddauer in Minuten: <input name="PD_Prog_Dauer_%u" type="number" min="10" max="300" step="1" size="8" required="1" value="%u">
 <input value="Submit" type="submit"><br /><br />
