@@ -25,7 +25,7 @@ uint8_t touchPorts[8] = {touchUp_wsgn, touchDown_gn, touchLeft_br, touchRight_ws
 float arrTouchAVG[8] = {0, 0, 0, 0, 0, 0, 0, 0};           //Array für die Durchschnitswerte pro Touch-Sensor
 uint8_t TouchSensitivity = 2;                              //Empfindlichkeit der Touchtasten unter Glas = 1
 uint8_t TouchFailureCount = 0;                            //Fehler der Touchtasten aufsummieren (Aktueller Wert > Initialwert)
-const uint8_t TouchFailureCountMax = 100;                  //Maximale Fehleranzahl der Tochtasten
+const uint8_t TouchFailureCountMax = 50;                  //Maximale Fehleranzahl der Tochtasten
 uint8_t SoftPWM_Counter = 0;                               //Zaehler der immer um 1 hochgezaehlt wird
 uint8_t SoftPWM_RGB[3] = {0, 0, 0};                        //3 Variablem mit dem Ausschaltwert (0 = immer aus, 255 = immer ein) 0 = Rot, 1 = Gruen, 2 = Blau
 uint8_t SoftPWM_Ports[3] = {RGB_Red, RGB_Green, RGB_Blue}; //Die 3 Ports in ein Array geschriben um sie einfacher zu bearbeiten
@@ -456,7 +456,7 @@ void loop()
           {
             if(Break_Touchtest < millis())
             {
-              float ReadVar = AVGTouchPort(touchPorts[i], 1);
+              float ReadVar = AVGTouchPort(touchPorts[i], 5);
               if(((ReadVar - arrTouchAVG[i]) > 0.3))
               {
                 if(TouchFailureCount >= TouchFailureCountMax)
@@ -482,7 +482,7 @@ void loop()
           }
         }
       }
-      Break_Touchtest = (Break_Touchtest > millis())?Break_Touchtest:(millis() + 1000);
+      Break_Touchtest = (Break_Touchtest > millis())?Break_Touchtest:(millis() + 60000);
     }
   }
   //Anweisungen werden alle 1 Sekunden ausgefuehrt
@@ -1953,21 +1953,21 @@ void WebserverDebugToggleWindow(AsyncWebServerRequest *request)
       DebugFenster = new Window(320, 480);
       DebugFenster->setDebug();
       DebugMode = 1;
-      request->send_P(200, "text/html", "Debug-Mode gestartet, zum beenden '/DebugEnd' als Postfix eintragen");
+      request->send_P(200, "text/html", "Debug-Mode gestartet, zum beenden '/DebugEnd' als Postfix eintragen<br><meta http-equiv=\"refresh\" content=\"2; URL=/\">");
       break;
     case 1:
       Hauptansicht->WindowActiv = true;
       DebugFenster->WindowActiv = false;
       DebugMode = 2;
       Hauptansicht->GetFirstObject()->DrawAllObjects();
-      request->send_P(200, "text/html", "Fenster umgeschaltet um zurueckzukehren nochmals '/DebugToggleWindow' eintragen");
+      request->send_P(200, "text/html", "Fenster umgeschaltet um zurueckzukehren nochmals '/DebugToggleWindow' eintragen<br><meta http-equiv=\"refresh\" content=\"2; URL=/\">");
       break;
     case 2:
       Hauptansicht->WindowActiv = false;
       DebugFenster->WindowActiv = true;
       DebugMode = 1;
       DebugFenster->drawDebug();
-      request->send_P(200, "text/html", "Fenster umgeschaltet um zurueckzukehren nochmals '/DebugToggleWindow' eintragen");
+      request->send_P(200, "text/html", "Fenster umgeschaltet um zurueckzukehren nochmals '/DebugToggleWindow' eintragen<br><meta http-equiv=\"refresh\" content=\"2; URL=/\">");
       break;
     default:
       break;
@@ -2002,6 +2002,10 @@ void WebserverDebugText(AsyncWebServerRequest *request)
     delete[] HTMLString;
 //    delete[] HTMLString_2;
   }
+  else
+  {
+    request->send_P(200, "text/html", "Debug-Mode nicht gestartet!<br><meta http-equiv=\"refresh\" content=\"2; URL=/\">");
+  }
 }
 
 void WebserverLastMessages(AsyncWebServerRequest *request)
@@ -2016,7 +2020,11 @@ void WebserverDebugStart(AsyncWebServerRequest *request)
   if(!DebugMode)
   {
     initDebugWindow();
-    request->send_P(200, "text/html", "Debug-Mode gestartet, zum beenden '/DebugEnd' als Postfix eintragen");
+    request->send_P(200, "text/html", "Debug-Mode gestartet, zum beenden '/DebugEnd' als Postfix eintragen<br><meta http-equiv=\"refresh\" content=\"2; URL=/\">");
+  }
+  else
+  {
+    request->send_P(200, "text/html", "Debug-Mode bereits gestartet!<br><meta http-equiv=\"refresh\" content=\"2; URL=/\">");
   }
 }
 void WebserverDebugEnd(AsyncWebServerRequest *request)
@@ -2025,7 +2033,11 @@ void WebserverDebugEnd(AsyncWebServerRequest *request)
   {
     closeDebugWindow();
     Hauptansicht->GetFirstObject()->DrawAllObjects();
-    request->send_P(200, "text/html", "Debug-Mode beendet");
+    request->send_P(200, "text/html", "Debug-Mode beendet<br><meta http-equiv=\"refresh\" content=\"2; URL=/\">");
+  }
+  else
+  {
+    request->send_P(200, "text/html", "Debug-Mode nicht gestartet!<br><meta http-equiv=\"refresh\" content=\"2; URL=/\">");
   }
 }
 void WebserverDisplayOff(AsyncWebServerRequest *request)
@@ -2034,7 +2046,7 @@ void WebserverDisplayOff(AsyncWebServerRequest *request)
   {
     cnt_LED_Display = 0;
     digitalWrite(Display_Beleuchtung, 0);
-    request->send_P(200, "text/html", "Display abgeschaltet");
+    request->send_P(200, "text/html", "Display abgeschaltet<br><meta http-equiv=\"refresh\" content=\"2; URL=/\">");
   }
 }
 void WebserverDisplayOn(AsyncWebServerRequest *request)
@@ -2043,14 +2055,13 @@ void WebserverDisplayOn(AsyncWebServerRequest *request)
   {
     cnt_LED_Display = millis() + DisplayVerz;
     digitalWrite(Display_Beleuchtung, 1);
-    request->send_P(200, "text/html", "Display angeschaltet");
+    request->send_P(200, "text/html", "Display angeschaltet<br><meta http-equiv=\"refresh\" content=\"2; URL=/\">");
   }
 }
 void WebserverTouchInit(AsyncWebServerRequest *request)
 {
   TouchSperre = millis() + 5000;
-  request->send_P(200, "text/html", "<HTML>\n<head>\n<meta http-equiv=\"refresh\" content=\"5\">\n</head>\n<body>\nTouchtasten werden neu initialisiert!\n</body>\n");
-  delay(500);
+  request->send_P(200, "text/html", "<HTML>\n<head>\n<meta http-equiv=\"refresh\" content=\"2 URL=/\">\n</head>\n<body>\nTouchtasten werden neu initialisiert!\n</body>\n");
   TouchInit();
 }
 void WebserverPOST(AsyncWebServerRequest *request)
@@ -2216,12 +2227,17 @@ void WebserverPOST(AsyncWebServerRequest *request)
         }
         else if (request->getParam(i)->name() == "wlPassword")
         {
-          if (request->getParam(i)->value().length() <= 60)
-            strcpy(varConfig.WLAN_Password, request->getParam(i)->value().c_str());
-          else
+          if(request->getParam(i)->value()!="xxxxxx")
           {
-            request->send_P(200, "text/html", "Passwort zu lang<form> <input type=\"button\" value=\"Go back!\" onclick=\"history.back()\"></form>");
-            return;
+            if ((request->getParam(i)->value().length() <= 60)&&(request->getParam(i)->value().length() >= 8))
+            { 
+              strcpy(varConfig.WLAN_Password, request->getParam(i)->value().c_str());
+            }
+            else
+            {
+              request->send_P(200, "text/html", "Passwortlaenge muss zwischen 8 und 60 Zeichen liegen<form> <input type=\"button\" value=\"Go back!\" onclick=\"history.back()\"></form>");
+              return;
+            }
           }
         }
         else

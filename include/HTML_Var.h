@@ -179,7 +179,7 @@ const char html_NWconfig[] PROGMEM = R"rawliteral(
     <TD VALIGN="TOP">
       Passwort: </TD>
   <TD>
-    <input name="wlPassword" type="password" minlength="8" maxlength="60" size="35"><br /><br /></TD>
+    <input name="wlPassword" type="password" value="xxxxxx" minlength="8" maxlength="60" size="35"><br /><br /></TD>
   </TR>
 </TABLE>
   <br>
