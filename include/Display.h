@@ -26,63 +26,6 @@ String IntToStr(float _var);
 String IntToStrHex(int _var);
 String IntToStr(uint32_t _var);
 
-enum
-{
-  t_up,
-  t_down,
-  t_Left,
-  t_Right,
-  t_F1,
-  t_F2,
-  t_F3,
-  t_F4
-};
-enum{  //Status Nanokommunikation
-  send_syscheck,
-  set_output,
-  set_watervolcompl,
-  set_Config,
-  set_ConvVar,
-  get_outputcheck,
-  get_waterlevel,
-  get_watervolcompl,
-  get_watervolcurrent,
-  get_ConvVar,
-  get_ConfigCheck,
-  get_CounterValue,
-  err_noerr,
-  err_read,
-  err_TransferESP,
-  err_waterlevel,
-  err_watervol,
-  err_EEPROM,
-  err_FunctionInactiv
-};
-enum{  //Menuepositionen Allgemein
-  WaterLevLiter, 
-  WaterVolTotal,
-  WaterVolCur,
-  WaterDifDay,
-  WaterDifWeek, 
-  WaterDifMonth, 
-  WaterLev, 
-  WaterLevRaw 
-};
-enum{  //Menuepositionen LED
-  LEDModus, 
-  LEDSpeed,
-  LEDRed,
-  LEDGreen,
-  LEDBlue
-};
-enum{
-  MQTT_Error,
-  MQTT_Waterlevel,
-  MQTT_currentConsume,
-  MQTT_totalConsume,
-  MQTT_stateOutput,
-  MQTT_CounterValue
-};
 
 
 class Window

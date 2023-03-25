@@ -1,3 +1,7 @@
+#ifndef HTML_Var
+#define HTML_Var
+
+
 #include <pgmspace.h>
 #include <Arduino.h>
 
@@ -7,62 +11,16 @@
 const String WeekDays[7]={"So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"};
 // //Allgemeine Definitionen
 enum {subwl = 27767, subnw = 30574, subcn = 20035, subpd = 17488, subps = 21328, sublf = 17996, sublm = 19788, submq = 29037}; //Zuordnung der Submit-Bereiche einer Ganzzahl
-enum {touchUp_wsgn = 33, touchDown_gn = 32, touchRight_wsbr = 15, touchLeft_br = 4, touchF1_bl = 13, touchF2_wsbl = 12, touchF3_or = 14, touchF4_wsor = 27, RGB_Red = 22, RGB_Green = 16, RGB_Blue = 17, Display_Beleuchtung = 21};
-enum {indexAGM = 0, indexLED = 1, indexProgStart = 2, indexNWK = 3};
 const String Un_Checked[2]{"","Checked"};
 const String varSelected[2]{"", " selected=\"\""};
 // const String De_Aktiviert[2]{"Deaktiviert","Aktiviert"};
 const String Ein_Aus[2]{"Aus","Ein"};
-const char countItems = 10; //Anzahl der moeglichen Prorammzeilen
-const char ProgItems = 4; // Anzahl Programme
 // unsigned long BaudrateRelais = 9600;
 // unsigned long BaudrateDebug = 115200;
 
 //Menünamen                 0               1                 2                   3                 4               5               6                7               8          9              10           11          12              13            14            15            16      17            18              19        20            21          22         23         24        25            26
 const String MenuName[30]={"Allgemein", "Wasser St l", "Verbr. Ges m3", "Verbr. ml/sek", "Wasser Dif T", "Wasser Dif W", "Wasser Dif M", "Wasser St", "Wasser St Roh", "LED-Config", "Modus", "Speed", "Standard Dauer", "Kanalname", "Offset in %", "Dauer in %", "NW-Config", "Accesspoint", "SSID", "Statische IP", "IP-Adresse", "NW-Name", "Subnetmask", "Gateway", "DNS-Server", "Zeitserver", "Zeitoffset"};
 const String LEDMode[9]={"Farbe", "Rot", "Gruen", "Blau", "Weiss", "Flash", "Strobe", "Fade", "Smoth"};
-//Struktur fuer die Regnerprogramme
-struct SprinklerItem{
-  unsigned int delay = 0;
-  unsigned int length = 0;
-  unsigned char channel = 0;
-};
-struct SprinklerProgramm{
-  SprinklerItem Zeilen[countItems]; 
-  unsigned char ProgItemCount = 0; //Wieviel Sprinkleritems sind vorhanden
-  unsigned int ProgDauer = 0;
-  char ProgName[7] = "Prog";
-};
-struct sprinklerConfig {
-  //Einstellungen NW-Einstellungen WLAN
-  char WLAN_AP_Aktiv = 1;
-  char WLAN_SSID[40] = "Regner";
-  char WLAN_Password[70] = "";
-  //Einstellungen NW-Einstellungen MQTT
-  char MQTT_Server[50] = "192.168.63.102";
-  uint16_t MQTT_Port = 1883;
-  char MQTT_Username[20] = "mrmqtt";
-  char MQTT_Password[70] = "ReDam";
-  char MQTT_fprint[70] = "";
-  char MQTT_rootpath[100] = "/Garten/Beregnung";
-  //Einstellungen NW-Einstellungen Netzwerk
-  char NW_StatischeIP = 0;
-  char NW_NetzName[20] = "Regner";
-  char NW_IPAdresse[17] = "192.168.178.10";
-  char NW_SubMask[17] = "255.255.255.0";
-  char NW_Gateway[17] = "192.168.178.1";
-  char NW_DNS[17] = "192.168.178.1";
-  char NW_NTPServer[55] = "fritz.box";
-  char NW_NTPOffset = 0;
-  //Regner
-  unsigned int Max_Liter = 8943;
-  SprinklerProgramm Programm[ProgItems];
-  char ChannelName[8][15]={"Kanal_1", "Kanal_2", "Kanal_3", "Kanal_4", "Kanal_5", "Kanal_6", "Kanal_7", "Kanal_8"};
-  //LED-Einstellungen
-  unsigned char LED_Prog = 0;
-  unsigned int LED_Color[3] = {0, 255, 0};
-  unsigned int LED_Speed = 125;
-};
 
 
 const char html_header[] PROGMEM = R"rawliteral(
@@ -469,3 +427,6 @@ const char html_Prog5[] PROGMEM = R"rawliteral(
 </body>
 </html>
 )rawliteral";
+
+
+#endif
