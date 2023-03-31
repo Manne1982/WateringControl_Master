@@ -24,10 +24,10 @@ struct sprinklerConfig {
   char WLAN_SSID[40] = "Regner";
   char WLAN_Password[70] = "";
   //Einstellungen NW-Einstellungen MQTT
-  char MQTT_Server[50] = "192.168.63.102";
+  char MQTT_Server[50] = "192.168.178.2";
   uint16_t MQTT_Port = 1883;
-  char MQTT_Username[20] = "mrmqtt";
-  char MQTT_Password[70] = "ReDam";
+  char MQTT_Username[20] = "Benutzer";
+  char MQTT_Password[70] = "123456";
   char MQTT_fprint[70] = "";
   char MQTT_rootpath[100] = "/Garten/Beregnung";
   //Einstellungen NW-Einstellungen Netzwerk
