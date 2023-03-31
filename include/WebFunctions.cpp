@@ -23,7 +23,7 @@ void WebserverRoot(AsyncWebServerRequest *request)
   HTMLTemp[0] = 0;
   sprintf(Header_neu, html_header, timeClient->getFormattedTime().c_str(), WeekDays[timeClient->getDay()].c_str(), monthDay, currentMonth, currentYear, WifiState, MQTTState, WifiLastChange, NanoRequests_afterLastAnsw, countMessages);
   //1. Fuellstand in L; 2. Fuellstand in Prozent; Wasserstand in mm; Fuellstand aenderung
-  sprintf(HTMLTemp, html_Start, (pGeneralVar[WaterLevLiter]), (100.0/maxWaterLevelLiter*pGeneralVar[WaterLevLiter]), (pGeneralVar[WaterLev]), pGeneralVar[WaterVolTotal]);
+  sprintf(HTMLTemp, html_Start, (pGeneralVar[WaterLevLiter]), ((100.0 * pGeneralVar[WaterLevLiter])/maxWaterLevelLiter), (pGeneralVar[WaterLev]), pGeneralVar[WaterVolTotal]);
   //Zusammenfassen der Einzelstrings
   sprintf(HTMLString, "%s%s", Header_neu, HTMLTemp);
   request->send_P(200, "text/html", HTMLString);

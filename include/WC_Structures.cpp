@@ -1,6 +1,5 @@
 #include "WC_Structures.h"
 
-
 outputVariables::outputVariables():
 SetOutputMan(0),                                  //Variable um einen Ausgang manuell zu setze
 NanoOutputState(0),                               //Relais sollstatus, nach Bestätigung von Nano wird Status übernommen
@@ -45,7 +44,7 @@ uint8_t outputVariables::getProgState(uint8_t Prog)
 
     return 0;
 }
-void outputVariables::setNewWaterlevel(uint8_t Prog, uint16_t newWaterlevel)
+int outputVariables::setNewWaterlevel(uint8_t Prog, uint16_t newWaterlevel)
 {
     if((newWaterlevel < WaterlevelLiter) && Prog && !SetWaterlevelLock)
     {
@@ -53,7 +52,16 @@ void outputVariables::setNewWaterlevel(uint8_t Prog, uint16_t newWaterlevel)
         SetWaterlevel_StartLevel = WaterlevelLiter;
         SetWaterlevel_TargetLevel = newWaterlevel;
         SetWaterlevel_Output = Prog;
+        return 1;
     }
+    return 0;
+}
+void outputVariables::resetNewWaterlevel()
+{
+    SetWaterlevel_StartTime = 0;
+    SetWaterlevel_StartLevel = 0;
+    SetWaterlevel_TargetLevel = 0;
+    SetWaterlevel_Output = 0;
 }
 void outputVariables::checkWaterlevel()
 {
@@ -65,7 +73,7 @@ void outputVariables::checkWaterlevel()
         SetWaterlevel_Output = 0;
     }
     else
-    if(SetWaterlevel_Output && (millis()>= (SetWaterlevel_StartTime + SetWaterlevel_MaxTime_Without_Change))&&(SetWaterlevel_TargetLevel == WaterlevelLiter))
+    if(SetWaterlevel_Output && (millis()>= (SetWaterlevel_StartTime + SetWaterlevel_MaxTime_Without_Change))&&(SetWaterlevel_StartLevel == WaterlevelLiter))
     {
         SetWaterlevel_StartTime = 0;
         SetWaterlevel_StartLevel = 0;

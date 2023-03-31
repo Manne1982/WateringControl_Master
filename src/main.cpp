@@ -155,7 +155,8 @@ void setup(void)
   Hauptmenu->CreateMenus(ProgItems + 3);
   rebuildMainMenu(Hauptmenu, &varConfig, pGeneralVar);
   //Errechnen des maximalen Fuellstands der Zisterne
-  maxWaterLevelLiter = calcWaterLiter(maxWaterLevelRoh - minWaterLevelRoh);
+  //maxWaterLevelLiter = calcWaterLiter(maxWaterLevelRoh - minWaterLevelRoh);
+  pGeneralVar[WaterLevLiter] = calcWaterLiter(maxWaterLevelRoh - minWaterLevelRoh);
 
   Hauptmenu->MenuNavNext();
   Hauptmenu->DrawObject();
@@ -164,7 +165,6 @@ void setup(void)
 
 }
 
-uint8_t Test_Var = 0;
 void loop()
 {
   //OTA

@@ -55,7 +55,8 @@ class outputVariables{
     uint8_t getOutputSummary();
     void setProgState(uint8_t Prog, uint8_t newState);
     uint8_t getProgState(uint8_t Prog);
-    void setNewWaterlevel(uint8_t Prog, uint16_t newWaterlevel);
+    int setNewWaterlevel(uint8_t Prog, uint16_t newWaterlevel);
+    void resetNewWaterlevel();
     void checkWaterlevel();
     void setWaterlevel(uint16_t newWaterlevel);
     uint16_t getWaterlevel();

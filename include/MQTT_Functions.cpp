@@ -7,18 +7,19 @@ void MQTT_callback(char* topic, byte* payload, unsigned int length)
 {
   int lengthTopic = strlen(varConfig.MQTT_rootpath);
   char SubscribeVar[lengthTopic+20];
-  char payloadTemp[length + 2];
-  for (int i =0; i < length; i++){
-    payloadTemp[i] = (char) payload[i];
-  }
-  payloadTemp[length] = 0;
+//  char payloadTemp[length + 2];
+//  for (int i =0; i < length; i++){
+//    payloadTemp[i] = (char) payload[i];
+//  }
+//  payloadTemp[length] = 0;
+  String payloadTemp = (char*) payload;
   //Debug-Bereich
   if(DebugMode)
   {
     DebugFenster->print("MQTT-topic: ");
     DebugFenster->printnl(topic);
     DebugFenster->print("Daten: ");
-    DebugFenster->printnl(payloadTemp);   
+    DebugFenster->printnl(payloadTemp.c_str());   
     DebugFenster->print("Daten erkannt: ");
     DebugFenster->println(varOutput.SetOutputMan);   
   }
@@ -26,25 +27,17 @@ void MQTT_callback(char* topic, byte* payload, unsigned int length)
   sprintf(SubscribeVar, "%s/setOutput", varConfig.MQTT_rootpath);
   if(!strcmp(topic, SubscribeVar))
   {
-    unsigned int var = 0;
-    if(sscanf(payloadTemp, "%u", &var)==1)
-    {
-      if(var < 256)
-        varOutput.SetOutputMan = var;
-    }
+    if((payloadTemp.toInt() < 256)&&(payloadTemp.toInt()>=0))
+      varOutput.SetOutputMan = payloadTemp.toInt();
     return;
   }
   //Ausgangsport setzen
   sprintf(SubscribeVar, "%s/setChannel", varConfig.MQTT_rootpath);
   if(!strcmp(topic, SubscribeVar))
   {
-    unsigned int var = 0;
-    if(sscanf(payloadTemp, "%u", &var)==1)
+    if((payloadTemp.toInt() < 8)&&(payloadTemp.toInt()>=0))
     {
-      if(var < 8)
-      {
-        varOutput.SetOutputMan |= 1<<var;
-      }
+      varOutput.SetOutputMan |= 1<<payloadTemp.toInt();
     }
     return;
   }
@@ -52,13 +45,9 @@ void MQTT_callback(char* topic, byte* payload, unsigned int length)
   sprintf(SubscribeVar, "%s/resetChannel", varConfig.MQTT_rootpath);
   if(!strcmp(topic, SubscribeVar))
   {
-    unsigned int var = 0;
-    if(sscanf(payloadTemp, "%u", &var)==1)
+    if((payloadTemp.toInt() < 8)&&(payloadTemp.toInt()>=0))
     {
-      if(var < 8)
-      {
-        varOutput.SetOutputMan &= ~(1<<var);
-      }
+      varOutput.SetOutputMan &= ~(1<<payloadTemp.toInt());
     }
     return;
   }
@@ -73,11 +62,10 @@ void MQTT_callback(char* topic, byte* payload, unsigned int length)
   sprintf(SubscribeVar, "%s/setProg", varConfig.MQTT_rootpath);
   if(!strcmp(topic, SubscribeVar))
   {
-    unsigned int var = 0;
     Break_60s = 0;
-    if(sscanf(payloadTemp, "%u", &var)==1)
+    if(payloadTemp.toInt())
     {
-      switch (var)
+      switch (payloadTemp.toInt())
       {
       case 1:
         Button1->SetButtonState(Switch_auto);
@@ -102,11 +90,11 @@ void MQTT_callback(char* topic, byte* payload, unsigned int length)
   sprintf(SubscribeVar, "%s/resetProg", varConfig.MQTT_rootpath);
   if(!strcmp(topic, SubscribeVar))
   {
-    unsigned int var = 0;
     Break_60s = 0;
-    if(sscanf(payloadTemp, "%u", &var)==1)
+    
+    if(payloadTemp.toInt())
     {
-      switch (var)
+      switch (payloadTemp.toInt())
       {
       case 1:
         Button1->SetButtonState(Switch_off);
@@ -125,6 +113,37 @@ void MQTT_callback(char* topic, byte* payload, unsigned int length)
         break;
       }
     }    
+    return;
+  }
+  //Lower the waterlevel
+  sprintf(SubscribeVar, "%s/setNewWaterlevel", varConfig.MQTT_rootpath);
+  if(!strcmp(topic, SubscribeVar))
+  {
+    uint32_t OUT, LEVEL;
+    Break_60s = 0;
+
+    if(sscanf(payloadTemp.c_str(), "OUT:%u|LEVEL:%u", &OUT, &LEVEL)==2)
+    {
+      if((OUT < 256)&&(LEVEL < maxWaterLevelLiter))
+      {
+        if(varOutput.setNewWaterlevel(OUT, LEVEL))
+          MQTT_sendText(MQTT_MSG_Error, "setNewWaterlevel Bedingung erfüllt!");
+        else
+          MQTT_sendText(MQTT_MSG_Error, "setNewWaterlevel Bedingung nicht erfüllt!");
+
+      }
+    }
+    else
+    {
+      MQTT_sendText(MQTT_MSG_Error, "Empfangene Werte falsch!");
+    }    
+    return;
+  }
+  sprintf(SubscribeVar, "%s/resetNewWaterlevel", varConfig.MQTT_rootpath);
+  if(!strcmp(topic, SubscribeVar))
+  {  
+    Break_60s = 0;
+    varOutput.resetNewWaterlevel();
     return;
   }
 }
@@ -159,6 +178,10 @@ bool MQTTinit()
     sprintf(SubscribeVar, "%s/setChannel", varConfig.MQTT_rootpath);
     MQTTclient.subscribe(SubscribeVar);
     sprintf(SubscribeVar, "%s/resetChannel", varConfig.MQTT_rootpath);
+    MQTTclient.subscribe(SubscribeVar);
+    sprintf(SubscribeVar, "%s/setNewWaterlevel", varConfig.MQTT_rootpath);
+    MQTTclient.subscribe(SubscribeVar);
+    sprintf(SubscribeVar, "%s/resetNewWaterlevel", varConfig.MQTT_rootpath);
     MQTTclient.subscribe(SubscribeVar);
     return true;
   }
