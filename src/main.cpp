@@ -121,6 +121,7 @@ void setup(void)
   server.on("/Prog", HTTP_GET, WebserverProg);
   server.on("/DelProg", HTTP_GET, WebserverDelProg);
   server.on("/Settings", HTTP_GET, WebserverSettings);
+  server.on("/CMD", HTTP_GET, WebserverCMD);
   server.on("/POST", HTTP_POST, WebserverPOST);
   //Toucharray initialisieren
   DebugFenster->printnl("Touch-Tasten initialisieren");

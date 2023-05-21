@@ -4,7 +4,7 @@
 
 //---------------------------------------------------------------------
 //Wifi Funtkionen
-void WiFi_Start_STA(char *ssid_sta, char *password_sta)
+void WiFi_Start_STA(const char *ssid_sta, const char *password_sta)
 {
   unsigned long timeout;
   unsigned int Adresspuffer[4];
@@ -50,20 +50,16 @@ void WiFi_Start_STA(char *ssid_sta, char *password_sta)
 #endif
   }
 }
-void WiFi_Start_AP(const char * ssid_AP)
+void WiFi_Start_AP(const char * ssid_AP, const char *password_AP)
 {
-//  char *ssid_AP = "ESP_Beregnung_01";
-  const char *password_AP = ""; //Wenn Passwort, dann muss es eine Laenge von 8 - 32 Zeichen haben
-
   WiFi.mode(WIFI_AP); // Accesspoint
                       //  WiFi.hostname(varConfig.NW_NetzName);
 
-  WiFi.softAP(ssid_AP, password_AP);
+  WiFi.softAP(ssid_AP, password_AP);//Wenn Passwort, dann muss es eine Laenge von 8 - 32 Zeichen haben
   server.begin();
-  IPAddress myIP = WiFi.softAPIP();
-  //  my_WiFi_Mode = WIFI_AP;
 
 #ifdef BGTDEBUG
+  IPAddress myIP = WiFi.softAPIP();
   Serial.print("Accesspoint started - Name : ");
   Serial.print(ssid_AP);
   Serial.print(" IP address: ");

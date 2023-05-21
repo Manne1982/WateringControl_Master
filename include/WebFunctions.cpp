@@ -3,11 +3,23 @@
 #include "WaterControl.h"
 #include "MQTT_Functions.h"
 #include "HTML_Var.h"
+#include "NanoCommunication.h"
 
 
 void notFound(AsyncWebServerRequest *request)
 {
   request->send(404, "text/plain", "Not found");
+}
+void WebserverCMD(AsyncWebServerRequest *request)
+{
+  uint32_t varTemp[2];
+  if(sscanf(request->url().c_str(), "/CMD/%u/%u", &varTemp[0], &varTemp[1])==2)
+  {
+    sendtoNano(varTemp[0], varTemp[1]);
+    request->send_P(200, "text/html", "Daten werden gesendet!<br><a href=\\Prog\\>Zurueck</a> <meta http-equiv=\"refresh\" content=\"1; URL=\\Prog\">");
+  }
+  else
+    request->send_P(200, "text/html", "Fehler!<br><a href=\\Prog\\>Zurueck</a> <meta http-equiv=\"refresh\" content=\"5; URL=\\Prog\">");
 }
 void WebserverRoot(AsyncWebServerRequest *request)
 {

@@ -27,8 +27,14 @@ int sendtoNano(char Command, uint32_t Data)
   case set_Config:
     sprintf(strTemp, "D0_%u", Data);
     break;
+  case set_ConvVar:
+    sprintf(strTemp, "C5_%u", Data);
+    break;
+  case get_ConvVar:
+    sprintf(strTemp, "C6_%u", Data);
+    break;
   case set_watervolcompl:
-    sprintf(strTemp, "D0_%u", Data);
+    sprintf(strTemp, "C4_%u", Data);
     break;
   case get_CounterValue:
     sprintf(strTemp, "D2_%u", Data);
