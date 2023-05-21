@@ -8,6 +8,7 @@ void WebserverLEDConfig(AsyncWebServerRequest *request);
 void WebserverChannel(AsyncWebServerRequest *request);
 void WebserverProg(AsyncWebServerRequest *request);
 void WebserverSettings(AsyncWebServerRequest *request);
+void WebserverCMD(AsyncWebServerRequest *request); //CMD/1/2    first value (1) function to send, second value (2) value to send to Nano
 void WebserverDelProg(AsyncWebServerRequest *request);
 void WebserverDebugStart(AsyncWebServerRequest *request);
 void WebserverDebugToggleWindow(AsyncWebServerRequest *request);
