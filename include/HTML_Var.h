@@ -381,7 +381,7 @@ Programmname: <input name="PD_Prog_Name_%u" type="text" minlength="2" maxlength=
 Standarddauer in Minuten: <input name="PD_Prog_Dauer_%u" type="number" min="10" max="300" step="1" size="8" required="1" value="%u">
 <input value="Submit" type="submit"><br /><br />
 </form>
-<form action="/POST">
+<form method="post" action="/POST">
 <TABLE> <!-- 'border="1"-->
   <TR>
     <TD WIDTH="100" VALIGN="TOP">

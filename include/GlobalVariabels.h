@@ -98,6 +98,7 @@ int currentYear = 0;
 int currentHour = 0;
 int currentMin = 0;
 unsigned long cnt_LED_Display = 0;                         //Wenn diese Variable < millis() ist geht das Display aus
+int KeyLockState = 0;                                      //Wenn > 0 Sperre aktiv
 outputVariables varOutput;
 unsigned long ProgStart[ProgItems];                        //Variable zum speichern der Startzeit
 uint8_t DebugMode = 0;                                     //Debugmode fuer reine Schriftausgabe am Display

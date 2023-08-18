@@ -192,13 +192,25 @@ void loop()
               DebugFenster->print(" aktueller Wert ");
               DebugFenster->println(currentTouch);
             }
-            if (cnt_LED_Display < millis())
+            if (cnt_LED_Display < millis()||KeyLockState)
             {
               TouchSperre = millis() + 500;
-              if (i == t_F1)
+              switch(i)
               {
-                digitalWrite(Display_Beleuchtung, 1);
-                cnt_LED_Display = millis() + DisplayVerz;
+                case t_F1:
+                if(KeyLockState == 2)
+                {
+                  digitalWrite(Display_Beleuchtung, 1);
+                  cnt_LED_Display = millis() + DisplayVerz;
+                  KeyLockState--;
+                }
+                break;
+                case t_Right:
+                if(KeyLockState == 1)
+                {
+                  cnt_LED_Display = millis() + DisplayVerz;
+                  KeyLockState--;
+                }
                 break;
               }
             }
@@ -319,6 +331,7 @@ void loop()
     else
     {
       digitalWrite(Display_Beleuchtung, 0);
+      KeyLockState = 2;
     }
   }
   //Anweisungen werden alle 20 Sekunden ausgefuehrt
