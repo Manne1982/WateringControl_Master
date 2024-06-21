@@ -7,12 +7,16 @@ void MQTT_callback(char* topic, byte* payload, unsigned int length)
 {
   int lengthTopic = strlen(varConfig.MQTT_rootpath);
   char SubscribeVar[lengthTopic+20];
+  char * paytemp = new char[length +5];
+  snprintf(paytemp, length + 1, "%s", payload);
+  paytemp[length+1] = 0;
 //  char payloadTemp[length + 2];
 //  for (int i =0; i < length; i++){
 //    payloadTemp[i] = (char) payload[i];
 //  }
 //  payloadTemp[length] = 0;
-  String payloadTemp = (char*) payload;
+  String payloadTemp = (char*) paytemp;
+  delete[] paytemp;
   //Debug-Bereich
   if(DebugMode)
   {
