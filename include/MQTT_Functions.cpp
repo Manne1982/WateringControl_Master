@@ -1,5 +1,6 @@
 #include "MQTT_Functions.h"
 #include "GlobalVariabels.h"
+//#include <ArduinoJson.h>
 
 
 //MQTT-Funktionen
@@ -35,6 +36,19 @@ void MQTT_callback(char* topic, byte* payload, unsigned int length)
       varOutput.SetOutputMan = payloadTemp.toInt();
     return;
   }
+/*  //Benutzerdefinierte Menüpunkte füllen
+  sprintf(SubscribeVar, "%s/setMenue", varConfig.MQTT_rootpath);
+  if(!strcmp(topic, SubscribeVar))
+  {
+    JsonDocument * newMenueValues = new JsonDocument;
+    newMenueValues->add(payloadTemp);
+
+    if((payloadTemp.toInt() < 256)&&(payloadTemp.toInt()>=0))
+      varOutput.SetOutputMan = payloadTemp.toInt();
+    
+    delete newMenueValues;
+    return;
+  }*/
   //Ausgangsport setzen
   sprintf(SubscribeVar, "%s/setChannel", varConfig.MQTT_rootpath);
   if(!strcmp(topic, SubscribeVar))
