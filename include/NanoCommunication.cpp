@@ -6,7 +6,14 @@ int sendtoNano(char Command, uint32_t Data)
 {
   char strTemp[15] = "";
   NanoRequests_afterLastAnsw++; //Fehlersuche zu Nanoabstürzen
-  switch(Command)
+  if(DebugMode)
+  {
+    DebugFenster->print("SendNano: ");
+    DebugFenster->println(Command);
+    DebugFenster->print("Daten: ");
+    DebugFenster->println(Data);   
+  }
+ switch(Command)
   {
   case send_syscheck:
     strcpy(strTemp, "S");
@@ -71,6 +78,11 @@ void SendRequests(uint32_t * Flags)
 {
   if(!(*Flags))
   return;
+  if(DebugMode)
+  {
+    DebugFenster->print("NanoRequestFlag_SendRequest: ");
+    DebugFenster->println(NanoRequestFlags);
+  }
   for(int i = 0; i < 25; i++)
   {
     if((1<<i)& *Flags)
@@ -102,11 +114,22 @@ void SendRequests(uint32_t * Flags)
           *Flags &= ~(1<<i);
           return;
         case set_watervolcompl:
-          sendtoNano(set_watervolcompl, newWaterConsumeValue);
+          sendtoNano(set_watervolcompl, newValue);
+          *Flags &= ~(1<<i);
+          return;
+        case set_ConvVar:
+          sendtoNano(set_ConvVar, newValue);
+          *Flags &= ~(1<<i);
+          return;
         default:
          break;
       }
     }
+  }
+  if(DebugMode)
+  {
+    DebugFenster->print("NanoRequestFlag_SendRequest_Rest wird zurückgesetzt: ");
+    DebugFenster->println(NanoRequestFlags);
   }
   *Flags = 0;
   return;

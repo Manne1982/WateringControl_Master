@@ -339,6 +339,11 @@ void loop()
   {
     Break_60s = millis() + 60000;
     SendRequests(&NanoRequestFlags);
+    if(DebugMode)
+    {
+      DebugFenster->print("NanoRequestFlag: ");
+      DebugFenster->println(NanoRequestFlags);
+    }
 
     //Vorbereitung Datum
     unsigned long epochTime = timeClient->getEpochTime();

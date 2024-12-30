@@ -67,17 +67,52 @@ void MQTT_callback(char* topic, byte* payload, unsigned int length)
   if(!strcmp(topic, SubscribeVar))
   {
     if(payloadTemp.toInt() >= 0)
-      newWaterConsumeValue = payloadTemp.toInt();
-      NanoRequestFlags |= set_watervolcompl;
+    {
+      newValue = payloadTemp.toInt();
+      NanoRequestFlags |= 1<<set_watervolcompl;
+    }
+    if(DebugMode)
+    {
+      DebugFenster->print("NanoRequestFlags: ");
+      DebugFenster->println(NanoRequestFlags);   
+      DebugFenster->print("Neuer Verbrauchsstand: ");
+      DebugFenster->println(newValue);
+    }
+    return;
+  }
+  //Setze neuen Wert als Umrechnungsfaktor für Volumenmessung
+  sprintf(SubscribeVar, "%s/setVolMeasureLogFaktor", varConfig.MQTT_rootpath);
+  if(!strcmp(topic, SubscribeVar))
+  {
+    if(payloadTemp.toInt() >= 0)
+    {
+      newValue = payloadTemp.toInt();
+      NanoRequestFlags |= 1<<set_ConvVar;
+    }
+    if(DebugMode)
+    {
+      DebugFenster->print("NanoRequestFlags: ");
+      DebugFenster->println(NanoRequestFlags);   
+      DebugFenster->print("Neuer VolMeasure Log Faktor: ");
+      DebugFenster->println(newValue);
+    }
     return;
   }
   //Setze neuen Wert in Gesamtverbrauch
   sprintf(SubscribeVar, "%s/getNanoValue", varConfig.MQTT_rootpath);
   if(!strcmp(topic, SubscribeVar))
   {
-    uint32_t Temp = payloadTemp.toInt(); 
+    uint8_t Temp = payloadTemp.toInt(); 
     if((Temp >= 5)&&(Temp <= 10))
       NanoRequestFlags |= 1<<Temp;
+    if(DebugMode)
+    {
+      DebugFenster->print("NanoRequestFlag: ");
+      DebugFenster->println(NanoRequestFlags);
+      DebugFenster->print("Befehl: ");
+      DebugFenster->println(Temp);   
+    }
+
     return;
     /*
   get_outputcheck     5
@@ -215,6 +250,8 @@ bool MQTTinit()
     sprintf(SubscribeVar, "%s/resetNewWaterlevel", varConfig.MQTT_rootpath);
     MQTTclient.subscribe(SubscribeVar);
     sprintf(SubscribeVar, "%s/setTotalConsume", varConfig.MQTT_rootpath);
+    MQTTclient.subscribe(SubscribeVar);
+    sprintf(SubscribeVar, "%s/setVolMeasureLogFaktor", varConfig.MQTT_rootpath);
     MQTTclient.subscribe(SubscribeVar);
     sprintf(SubscribeVar, "%s/getNanoValue", varConfig.MQTT_rootpath);
     MQTTclient.subscribe(SubscribeVar);
