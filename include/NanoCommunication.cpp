@@ -101,6 +101,8 @@ void SendRequests(uint32_t * Flags)
           sendtoNano(get_watervolcurrent, 0);
           *Flags &= ~(1<<i);
           return;
+        case set_watervolcompl:
+          sendtoNano(set_watervolcompl, newWaterConsumeValue);
         default:
          break;
       }

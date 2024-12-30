@@ -442,7 +442,8 @@ void loop()
   {
     Break_10m = millis() + 600000;
     sprintf(MQTTState, "MQTT %d", MQTTclient.state());
-    NanoRequestFlags |= 1<<get_waterlevel;  //Anfordern Wasserstand in Zisterne
+//    NanoRequestFlags |= 1<<get_waterlevel;  //Anfordern Wasserstand in Zisterne
+
   }
 
   //Anweisungen werden alle 3600 Sekunden (1h) ausgefuehrt
@@ -452,7 +453,7 @@ void loop()
     timeClient->update();
     if(WIFIConnectionCheck(true))
     {
-      NanoRequestFlags |= (1<<get_waterlevel) | (1<<get_watervolcompl);
+      NanoRequestFlags |= (1<<get_waterlevel) | (1<<get_watervolcompl) | (1<<get_ConvVar);
     }
   }
   //LED aktivieren
@@ -633,6 +634,17 @@ void loop()
           if(DebugMode)
           {
             DebugFenster->print("Aktueller Zählerstand ");
+            DebugFenster->println(Temp);
+          }
+        }
+        break;
+      case get_ConvVar:
+        if(Temp >= 0)
+        {
+          MQTT_sendMessage(MQTT_MSG_ConvVar, Temp); 
+          if(DebugMode)
+          {
+            DebugFenster->print("Aktuelle Konvertierungsvariabele ");
             DebugFenster->println(Temp);
           }
         }

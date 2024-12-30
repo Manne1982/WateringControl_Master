@@ -109,6 +109,7 @@ uint16_t minWaterLevelRoh = 22;                               //Min Rueckgabewer
 const uint16_t maxWaterLevelLiter = 8845;                          //Maximaler Fuellstand in Liter; Bei maxWassertiefe von 204 cm und min. 22 cm
 int32_t pGeneralVar[8] = {-1, -1, -1, -1, -1, -1, -1, -1};            //Verschiedene Wasserstaende und Verbraeuche
 uint32_t NanoRequestFlags = 0;          //Anfragen die noch geschickt werden müssen, damit nicht alle auf einmal geschickt werden
+uint32_t newWaterConsumeValue = 0;
 char MQTTState[20] = "MQTT Ready";
 char WifiState[20] = "Wifi Ready";
 char WifiLastChange[50] = "";         //Aufnahme des Zeitstempels wann letztes mal die Verbindung neu aufgebaut wurde inklusive des WIFI Statuses

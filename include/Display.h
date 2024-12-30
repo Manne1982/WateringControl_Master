@@ -253,6 +253,6 @@ class MenuPos: public Object
         uint8_t ToggleState;
 };
 
-#include "display.cpp"
+#include "Display.cpp"
 
 #endif

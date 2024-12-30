@@ -11,7 +11,8 @@ enum{
   MQTT_MSG_currentConsume,
   MQTT_MSG_totalConsume,
   MQTT_MSG_stateOutput,
-  MQTT_MSG_CounterValue
+  MQTT_MSG_CounterValue,
+  MQTT_MSG_ConvVar
 };
 
 struct SprinklerItem;

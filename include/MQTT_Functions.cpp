@@ -62,6 +62,33 @@ void MQTT_callback(char* topic, byte* payload, unsigned int length)
     //code
     return;
   }
+  //Setze neuen Wert in Gesamtverbrauch
+  sprintf(SubscribeVar, "%s/setTotalConsume", varConfig.MQTT_rootpath);
+  if(!strcmp(topic, SubscribeVar))
+  {
+    if(payloadTemp.toInt() >= 0)
+      newWaterConsumeValue = payloadTemp.toInt();
+      NanoRequestFlags |= set_watervolcompl;
+    return;
+  }
+  //Setze neuen Wert in Gesamtverbrauch
+  sprintf(SubscribeVar, "%s/getNanoValue", varConfig.MQTT_rootpath);
+  if(!strcmp(topic, SubscribeVar))
+  {
+    uint32_t Temp = payloadTemp.toInt(); 
+    if((Temp >= 5)&&(Temp <= 10))
+      NanoRequestFlags |= 1<<Temp;
+    return;
+    /*
+  get_outputcheck     5
+  get_waterlevel      6
+  get_watervolcompl   7
+  get_watervolcurrent 8
+  get_ConvVar         9
+  get_ConfigCheck     10
+*/
+  }
+    
   //Programm starten
   sprintf(SubscribeVar, "%s/setProg", varConfig.MQTT_rootpath);
   if(!strcmp(topic, SubscribeVar))
@@ -187,6 +214,10 @@ bool MQTTinit()
     MQTTclient.subscribe(SubscribeVar);
     sprintf(SubscribeVar, "%s/resetNewWaterlevel", varConfig.MQTT_rootpath);
     MQTTclient.subscribe(SubscribeVar);
+    sprintf(SubscribeVar, "%s/setTotalConsume", varConfig.MQTT_rootpath);
+    MQTTclient.subscribe(SubscribeVar);
+    sprintf(SubscribeVar, "%s/getNanoValue", varConfig.MQTT_rootpath);
+    MQTTclient.subscribe(SubscribeVar);
     return true;
   }
   else
@@ -221,6 +252,9 @@ bool MQTT_sendMessage(int MQTT_MSGType, const uint8_t* MSG, uint8_t len)
     return MQTTclient.publish(strPathVar, MSG, len, true);
   case MQTT_MSG_CounterValue:
     sprintf(strPathVar, "%s/CounterValue", varConfig.MQTT_rootpath);
+    return MQTTclient.publish(strPathVar, MSG, len, true);
+  case MQTT_MSG_ConvVar:
+    sprintf(strPathVar, "%s/ConvVar", varConfig.MQTT_rootpath);
     return MQTTclient.publish(strPathVar, MSG, len, true);
   
   default:
